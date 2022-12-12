@@ -1,0 +1,39 @@
+html,
+body,
+p {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#playground {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-columns: repeat(10, 1fr);
+    padding: 1rem;
+    border: 1px solid black;
+}
+
+.cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+    /* background-color: red; */
+}
+
+.shadedCell {
+    background-color: rgb(87, 87, 87);
+}
+
+.foodCell{
+    background-color: red;
+}
