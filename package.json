@@ -1,0 +1,19 @@
+{
+  "name": "snake_xenzia",
+  "version": "1.0.0",
+  "description": "The retro snake game brought to the web",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ken-mbira/snake_xenzia.git"
+  },
+  "author": "Ken Mbira",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Ken-mbira/snake_xenzia/issues"
+  },
+  "homepage": "https://github.com/Ken-mbira/snake_xenzia#readme"
+}
