@@ -1,4 +1,4 @@
-"use strict"
+import './index.css';
 /*
 Game functionality
 
@@ -80,7 +80,9 @@ const SNAKE_LENGTH = 3;
 const SNAKE_DIRECTION = "SOUTH";
 const SNAKE_SPEED = 300;
 
-let playGroundElement = document.getElementById("playground");
+let playGroundElement = document.createElement("div");
+playGroundElement.id = "playground";
+document.body.appendChild(playGroundElement);
 let playGroundHeight = 10;
 let playGroundWidth = 10;
 
