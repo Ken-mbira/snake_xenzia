@@ -15,12 +15,24 @@ module.exports = (env) => {
                 {
                     test : /\.css$/i,
                     use : ['style-loader', 'css-loader']
+                },
+                {
+                    test: /\.png$/i,
+                    use: [
+                        {
+                            loader: 'file-loader',
+                            options: {
+                                outputPath: 'images',
+                                name: 'play_icon.png'
+                            }
+                        }
+                    ]
                 }
             ]
         },
         plugins: [
             new htmlwebpackPlugin({
-                title: "Snake Xenzia"
+                template: './src/index.html'
             })
         ],
         devServer : {

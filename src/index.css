@@ -12,12 +12,43 @@ body {
     align-items: center;
 }
 
+.main {
+    position: relative;
+}
+
+#play-icon{
+    width: 100px;
+    height: 100px;
+}
+
+#play-screen {
+    position:absolute;
+    left: 50%;
+    top: 50%;
+    background-color: rgb(87, 87, 87, .2);
+    transform: translate(-50%, -50%);
+    padding: 7em;
+}
+
 #playground {
-    display: grid;
+    position:absolute;
+    display: none;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     grid-template-columns: repeat(10, 1fr);
     grid-template-columns: repeat(10, 1fr);
     padding: 1rem;
     border: 1px solid black;
+}
+
+#play-button {
+  border: none;
+  background-color: transparent;
+  color: transparent;
+  outline: none;
+  box-shadow: none;
+  cursor: pointer;
 }
 
 .cell {
@@ -27,7 +58,6 @@ body {
     border-radius: 5px;
     width: 30px;
     height: 30px;
-    /* background-color: red; */
 }
 
 .shadedCell {
