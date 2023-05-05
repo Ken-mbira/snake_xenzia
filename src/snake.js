@@ -39,7 +39,7 @@ export class SnakeGame {
         for (let i = 0; i < this.playGroundHeight; i++) {
             let playGroundRow = [];
             for (let j = 0; j < this.playGroundWidth; j++) {
-                let cellId = (i.toString() + j.toString());
+                let cellId = (i.toString() + ',' + j.toString());
                 let cell = this.createCell(cellId);
                 playGroundRow.push(cell.id);
                 this.playGroundElement.appendChild(cell);
@@ -106,7 +106,7 @@ export class SnakeGame {
     };
 
     getCellId(cellCoordinates) {
-        return cellCoordinates.join("").toString();
+        return cellCoordinates.join(",").toString();
     };
 
     cellWithinPlayground(coordinates) {

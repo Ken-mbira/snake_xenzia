@@ -13,8 +13,8 @@ window.play_icon_src = play_icon;
 document.getElementById('play-icon').src = window.play_icon_src;
 
 
-let playGroundHeight = 10;
-let playGroundWidth = 10;
+let playGroundHeight = 20;
+let playGroundWidth = 20;
 
 function game() {
     let mainElement = document.getElementById('main');
