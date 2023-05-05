@@ -1,3 +1,5 @@
+import { Cell } from "./cell";
+
 const SHADED_CLASS = "shadedCell";
 const FOOD_CLASS = "foodCell";
 
@@ -95,7 +97,7 @@ export class SnakeGame {
     renderSnake(startingPosition) {
         // Draw the snake provided the starting position.
         let shadedUntil = startingPosition;
-        for (let i = 0; i < this.snakeLength; i++) {
+        for (let i = 1; i < this.snakeLength; i++) {
             // Shade the subsequent cells
             let nextCell = this.getNextCell(this.getOppositeDirection(this.frontCellDirection), shadedUntil);
             let nextCellId = this.getCellId(nextCell);

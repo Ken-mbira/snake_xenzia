@@ -17,6 +17,10 @@ module.exports = (env) => {
                     use : ['style-loader', 'css-loader']
                 },
                 {
+                    test : /\.ts$/i,
+                    use : ['ts-loader']
+                },
+                {
                     test: /\.png$/i,
                     use: [
                         {
@@ -29,6 +33,9 @@ module.exports = (env) => {
                     ]
                 }
             ]
+        },
+        resolve: {
+            extensions: ['.ts','.js']
         },
         plugins: [
             new htmlwebpackPlugin({
