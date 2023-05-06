@@ -7,7 +7,7 @@ export class Cell {
     constructor(public id:string) {
         this.element = document.createElement("div");
         this.element.className = "cell";
-        this.element.id = this.id;
+        this.element.id = id;
     }
 
     shadeCell() {
@@ -20,6 +20,10 @@ export class Cell {
 
     setFood() {
         this.element.classList.add(FOOD_CLASS);
+    }
+
+    eatFood() {
+        this.element.classList.remove(FOOD_CLASS);
     }
 
     get isOccupied():boolean {

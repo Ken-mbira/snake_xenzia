@@ -4,7 +4,7 @@ const SHADED_CLASS = "shadedCell";
 const FOOD_CLASS = "foodCell";
 
 export class SnakeGame {
-    playGround = [];
+    playGroundCells = [];
 
     frontCellDirectionBuffer = [];
     lastCellDirectionBuffer = [];
@@ -39,24 +39,17 @@ export class SnakeGame {
 
     createPlayGround() {
         for (let i = 0; i < this.playGroundHeight; i++) {
-            let playGroundRow = [];
+            let playGroundCellRow = [];
             for (let j = 0; j < this.playGroundWidth; j++) {
                 let cellId = (i.toString() + ',' + j.toString());
-                let cell = this.createCell(cellId);
-                playGroundRow.push(cell.id);
-                this.playGroundElement.appendChild(cell);
+                let newCell = new Cell(cellId);
+                playGroundCellRow.push(newCell);
+                this.playGroundElement.appendChild(newCell.element);
             }
-            this.playGround.push(playGroundRow);
-            playGroundRow = [];
+            this.playGroundCells.push(playGroundCellRow);
+            playGroundCellRow = [];
         }
     }
-
-    createCell(id) {
-        let cell = document.createElement("div");
-        cell.className = "cell";
-        cell.id = id;
-        return cell;
-    };
 
     getMedian(number) {
         let isEven = number % 2 === 0;
@@ -68,7 +61,7 @@ export class SnakeGame {
         }
     };
 
-    getNextCell(direction, cell) {
+    getNextCellCoordinates(direction, cell) {
         switch (direction) {
             case ("NORTH"): {
                 return [cell[0] - 1, cell[1]];
@@ -84,32 +77,26 @@ export class SnakeGame {
         };
     };
 
-    shadeCell(cellId) {
-        let startingCell = document.getElementById(cellId);
-        startingCell.classList.add(SHADED_CLASS);
-    };
-
-    unshadeCell(cellId) {
-        let startingCell = document.getElementById(cellId);
-        startingCell.classList.remove(SHADED_CLASS);
-    };
-
     renderSnake(startingPosition) {
         // Draw the snake provided the starting position.
         let shadedUntil = startingPosition;
         for (let i = 1; i < this.snakeLength; i++) {
             // Shade the subsequent cells
-            let nextCell = this.getNextCell(this.getOppositeDirection(this.frontCellDirection), shadedUntil);
-            let nextCellId = this.getCellId(nextCell);
-            this.shadeCell(nextCellId);
-            shadedUntil = nextCell;
+            let nextCellCoordinates = this.getNextCellCoordinates(this.getOppositeDirection(this.frontCellDirection), shadedUntil);
+            let nextCell = this.getCell(nextCellCoordinates);
+            nextCell.shadeCell()
+            shadedUntil = nextCellCoordinates;
         };
         return shadedUntil;
     };
 
     getCellId(cellCoordinates) {
         return cellCoordinates.join(",").toString();
-    };
+    }
+
+    getCell(cellCoordinates) {
+        return this.playGroundCells[cellCoordinates[0]][cellCoordinates[1]];
+    }
 
     cellWithinPlayground(coordinates) {
         let playGroundArea = this.playGroundHeight * this.playGroundWidth;
@@ -198,26 +185,26 @@ export class SnakeGame {
     };
 
     cellCheck(coordinates) {
-        if (this.cellWithinPlayground(coordinates) && !this.cellIsOccupied(coordinates)) {
+        let checkCell = this.getCell(coordinates);
+        if (this.cellWithinPlayground(coordinates) && !checkCell.isOccupied) {
             return true;
         } else {
             return false;
         };
     };
 
-    getPossibleFoodPositions() {
-        let possibleFoodPositions = [];
-        for (let i = 0; i < this.playGround.length; i++) {
-            for (let j = 0; j < this.playGround[i].length; j++) {
-                let cellHasFood = this.cellHasFood([i, j]);
-                let cellIsOccupied = this.cellIsOccupied([i, j]);
+    getPossibleFoodCells() {
+        let possibleFoodCells = [];
+        for (let i = 0; i < this.playGroundCells.length; i++) {
+            for (let j = 0; j < this.playGroundCells[i].length; j++) {
+                let currentCell = this.getCell([i, j]);
 
-                if (!cellHasFood && !cellIsOccupied) {
-                    possibleFoodPositions.push(this.getCellId([i, j]));
+                if (!currentCell.hasFood && !currentCell.isOccupied) {
+                    possibleFoodCells.push(currentCell);
                 };
             };
         };
-        return possibleFoodPositions;
+        return possibleFoodCells;
     };
 
     getRandomInt(maxValue) {
@@ -225,31 +212,32 @@ export class SnakeGame {
     };
 
     positionFood() {
-        let possibleFoodPositions = this.getPossibleFoodPositions();
-        let newFoodCellId = possibleFoodPositions[this.getRandomInt(possibleFoodPositions.length)];
+        let possibleFoodCells = this.getPossibleFoodCells();
+        let newFoodCell = possibleFoodCells[this.getRandomInt(possibleFoodCells.length)];
 
-        let foodCell = document.getElementById(newFoodCellId);
-        foodCell.classList.add(FOOD_CLASS);
+        newFoodCell.setFood();
     };
 
     eatFood(coordinates) {
-        if (this.cellHasFood(coordinates)) {
+        let foodCell = this.getCell(coordinates);
+        if (foodCell.hasFood) {
             this.isEating = true;
-            let cellWithFood = document.getElementById(this.getCellId(coordinates));
-            cellWithFood.classList.remove(FOOD_CLASS);
+            foodCell.eatFood();
         };
     };
 
     moveSnake() {
         this.frontCellDirection = this.getFrontCellNextDirection();
-        let nextFrontCellCoordinates = this.getNextCell(this.frontCellDirection, this.frontCellCoordinates);
+        let nextFrontCellCoordinates = this.getNextCellCoordinates(this.frontCellDirection, this.frontCellCoordinates);
         if (this.cellCheck(nextFrontCellCoordinates)) {
             this.frontCellCoordinates = nextFrontCellCoordinates;
             this.eatFood(this.frontCellCoordinates);
-            this.shadeCell(this.getCellId(this.frontCellCoordinates));
+            let frontCell = this.getCell(this.frontCellCoordinates);
+            frontCell.shadeCell();
 
             if (!this.isEating) {
-                this.unshadeCell(this.getCellId(this.lastCellCoordinates));
+                let lastCell = this.getCell(this.lastCellCoordinates);
+                lastCell.unShadeCell();
                 this.lastCellDirection = this.getLastCellNextDirection();
                 this.lastCellCoordinates = this.getNextCell(this.lastCellDirection, this.lastCellCoordinates);
             } else {
@@ -267,10 +255,10 @@ export class SnakeGame {
 
     startGame() {
         this.frontCellCoordinates = [this.getMedian(this.playGroundHeight), this.getMedian(this.playGroundWidth)];
-        let startingCellId = this.playGround[this.frontCellCoordinates[0]][this.frontCellCoordinates[1]];
-
+        
+        let startingCell = this.getCell(this.frontCellCoordinates);
         // Shade the initial cell
-        this.shadeCell(startingCellId);
+        startingCell.shadeCell();
 
         this.lastCellCoordinates = this.renderSnake(this.frontCellCoordinates);
         this.listenForDirectionChange();

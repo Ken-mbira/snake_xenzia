@@ -3,7 +3,7 @@ import play_icon from './assets/play_icon.png';
 
 import { SnakeGame } from './snake';
 
-const SNAKE_LENGTH = 2;
+const SNAKE_LENGTH = 3;
 const SNAKE_DIRECTION = "SOUTH";
 const SNAKE_SPEED = 300;
 
