@@ -1,4 +1,4 @@
-import { Cell } from "./cell";
+import { Cell } from "./cell.js";
 
 const SHADED_CLASS = "shadedCell";
 const FOOD_CLASS = "foodCell";
@@ -239,7 +239,7 @@ export class SnakeGame {
                 let lastCell = this.getCell(this.lastCellCoordinates);
                 lastCell.unShadeCell();
                 this.lastCellDirection = this.getLastCellNextDirection();
-                this.lastCellCoordinates = this.getNextCell(this.lastCellDirection, this.lastCellCoordinates);
+                this.lastCellCoordinates = this.getNextCellCoordinates(this.lastCellDirection, this.lastCellCoordinates);
             } else {
                 this.isEating = false;
                 this.positionFood();

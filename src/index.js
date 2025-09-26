@@ -1,15 +1,11 @@
-import './index.css';
-import play_icon from './assets/play_icon.png';
-
-import { SnakeGame } from './snake';
+import { SnakeGame } from './snake.js';
 
 const SNAKE_LENGTH = 3;
 const SNAKE_DIRECTION = "SOUTH";
 const SNAKE_SPEED = 300;
 
 // set the icon src
-window.play_icon_src = play_icon;
-document.getElementById('play-icon').src = window.play_icon_src;
+document.getElementById('play-icon').src = './assets/play_icon.png';
 
 
 let playGroundHeight = 10;

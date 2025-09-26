@@ -2,9 +2,8 @@ const SHADED_CLASS = "shadedCell";
 const FOOD_CLASS = "foodCell";
 
 export class Cell {
-    element: HTMLElement;
-
-    constructor(public id:string) {
+    constructor(id) {
+        this.id = id;
         this.element = document.createElement("div");
         this.element.className = "cell";
         this.element.id = id;
@@ -26,11 +25,11 @@ export class Cell {
         this.element.classList.remove(FOOD_CLASS);
     }
 
-    get isOccupied():boolean {
+    get isOccupied() {
         return this.element.classList.contains(SHADED_CLASS);
     }
 
-    get hasFood():boolean {
+    get hasFood() {
         return this.element.classList.contains(FOOD_CLASS);
     }
 }
