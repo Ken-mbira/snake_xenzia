@@ -11,12 +11,9 @@ export class SnakeGame {
 
     isEating = false;
 
-    keyMappings = {
-        "ARROWRIGHT": "EAST",
-        "ARROWLEFT": "WEST",
-        "ARROWUP": "NORTH",
-        "ARROWDOWN": "SOUTH"
-    };
+    originalDirection = "";
+    originalSnakeLength = 0;
+
 
     constructor(
         playGroundElement,
@@ -24,15 +21,22 @@ export class SnakeGame {
         playGroundWidth,
         snakeLength,
         snakeDirection,
-        snakeSpeed
+        snakeSpeed,
+        showResetUI
     ) {
         this.playGroundHeight = playGroundHeight;
         this.playGroundElement = playGroundElement;
         this.playGroundWidth = playGroundWidth;
+
         this.snakeLength = snakeLength;
+        this.originalSnakeLength = snakeLength;
+
         this.frontCellDirection = snakeDirection;
+        this.originalDirection = snakeDirection;
         this.lastCellDirection = snakeDirection;
+
         this.snakeSpeed = snakeSpeed;
+        this.showResetUI = showResetUI;
 
         this.createPlayGround();
     }
@@ -63,13 +67,13 @@ export class SnakeGame {
 
     getNextCellCoordinates(direction, cell) {
         switch (direction) {
-            case ("NORTH"): {
+            case ("UP"): {
                 return [cell[0] - 1, cell[1]];
-            } case ("EAST"): {
+            } case ("RIGHT"): {
                 return [cell[0], cell[1] + 1];
-            } case ("SOUTH"): {
+            } case ("DOWN"): {
                 return [cell[0] + 1, cell[1]];
-            } case ("WEST"): {
+            } case ("LEFT"): {
                 return [cell[0], cell[1] - 1];
             } default: {
                 return cell
@@ -78,7 +82,6 @@ export class SnakeGame {
     };
 
     renderSnake(startingPosition) {
-        // Draw the snake provided the starting position.
         let shadedUntil = startingPosition;
         for (let i = 1; i < this.snakeLength; i++) {
             // Shade the subsequent cells
@@ -98,10 +101,8 @@ export class SnakeGame {
         return this.playGroundCells[cellCoordinates[0]][cellCoordinates[1]];
     }
 
-    cellWithinPlayground(coordinates) {
-        let playGroundArea = this.playGroundHeight * this.playGroundWidth;
-        let cellId = parseInt(this.getCellId(coordinates));
-        return cellId >= 0 && cellId < playGroundArea;
+    isCellWithinPlayground(coordinates) {
+        return coordinates[0] >= 0 && coordinates[0] < this.playGroundHeight && coordinates[1] >= 0 && coordinates[1] < this.playGroundWidth;
     };
 
     cellIsOccupied(coordinates) {
@@ -118,14 +119,14 @@ export class SnakeGame {
 
     getOppositeDirection(direction) {
         switch (direction) {
-            case ("NORTH"): {
-                return "SOUTH";
+            case ("UP"): {
+                return "DOWN";
             }
-            case ("SOUTH"): {
-                return "NORTH";
+            case ("DOWN"): {
+                return "UP";
             }
-            case ("WEST"): {
-                return "EAST";
+            case ("LEFT"): {
+                return "RIGHT";
             }
             case ("EAST"): {
                 return "WEST";
@@ -142,22 +143,6 @@ export class SnakeGame {
         } else if (this.getOppositeDirection(latestDirection) !== direction) {
             this.frontCellDirectionBuffer.push(direction);
         };
-    };
-
-    listenForDirectionChange() {
-        document.addEventListener("keydown", (event) => {
-            let keyPressed = event.key.toUpperCase();
-            let directions = ["ARROWUP", "ARROWRIGHT", "ARROWLEFT", "ARROWDOWN"];
-            if (directions.includes(keyPressed)) {
-                this.handleDirectionChange(this.keyMappings[keyPressed]);
-            };
-        });
-    };
-
-    stopListeningForDirectionChange() {
-        document.removeEventListener("keydown", (event) => {
-            this.handleDirectionChange(event.key.toUpperCase());
-        })
     };
 
     getLastCellNextDirection() {
@@ -185,12 +170,16 @@ export class SnakeGame {
     };
 
     cellCheck(coordinates) {
-        let checkCell = this.getCell(coordinates);
-        if (this.cellWithinPlayground(coordinates) && !checkCell.isOccupied) {
-            return true;
-        } else {
+        if(!this.isCellWithinPlayground(coordinates)) {
             return false;
-        };
+        }
+
+        let checkCell = this.getCell(coordinates);
+        if (checkCell.isOccupied) {
+            return false;
+        }
+
+        return true;
     };
 
     getPossibleFoodCells() {
@@ -218,26 +207,31 @@ export class SnakeGame {
         newFoodCell.setFood();
     };
 
-    eatFood(coordinates) {
-        let foodCell = this.getCell(coordinates);
-        if (foodCell.hasFood) {
-            this.isEating = true;
-            foodCell.eatFood();
-        };
+    eatFood(foodCell) {
+        this.isEating = true;
+        foodCell.eatFood();
     };
 
     moveSnake() {
         this.frontCellDirection = this.getFrontCellNextDirection();
+
         let nextFrontCellCoordinates = this.getNextCellCoordinates(this.frontCellDirection, this.frontCellCoordinates);
+
         if (this.cellCheck(nextFrontCellCoordinates)) {
             this.frontCellCoordinates = nextFrontCellCoordinates;
-            this.eatFood(this.frontCellCoordinates);
+
+            let newCell = this.getCell(this.frontCellCoordinates);
+            if (newCell.hasFood) {
+                this.eatFood(newCell);
+            }
+
             let frontCell = this.getCell(this.frontCellCoordinates);
             frontCell.shadeCell();
 
             if (!this.isEating) {
                 let lastCell = this.getCell(this.lastCellCoordinates);
-                lastCell.unShadeCell();
+                lastCell.unshadeCell();
+
                 this.lastCellDirection = this.getLastCellNextDirection();
                 this.lastCellCoordinates = this.getNextCellCoordinates(this.lastCellDirection, this.lastCellCoordinates);
             } else {
@@ -249,11 +243,30 @@ export class SnakeGame {
                 this.moveSnake()
             }, this.snakeSpeed)
         } else {
-            this.resetGameCallback();
+            this.resetGame();
         };
     };
 
+    resetGame() {
+        this.showResetUI();
+
+        this.frontCellDirectionBuffer = [];
+        this.lastCellDirectionBuffer = [];
+        this.isEating = false;
+
+        this.frontCellDirection = this.originalDirection;
+        this.lastCellDirection = this.originalDirection;
+        this.snakeLength = this.originalSnakeLength;
+    }
+
     startGame() {
+        this.playGroundCells.forEach(row => {
+            row.forEach(cell => {
+                cell.unshadeCell();
+                cell.removeFood();
+            });
+        });
+
         this.frontCellCoordinates = [this.getMedian(this.playGroundHeight), this.getMedian(this.playGroundWidth)];
         
         let startingCell = this.getCell(this.frontCellCoordinates);
@@ -261,7 +274,6 @@ export class SnakeGame {
         startingCell.shadeCell();
 
         this.lastCellCoordinates = this.renderSnake(this.frontCellCoordinates);
-        this.listenForDirectionChange();
         this.moveSnake();
         this.positionFood();
     };

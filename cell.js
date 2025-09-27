@@ -7,14 +7,19 @@ export class Cell {
         this.element = document.createElement("div");
         this.element.className = "cell";
         this.element.id = id;
+        this.element.innerHTML = id;
     }
 
     shadeCell() {
         this.element.classList.add(SHADED_CLASS);
     }
 
-    unShadeCell() {
+    unshadeCell() {
         this.element.classList.remove(SHADED_CLASS);
+    }
+
+    removeFood() {
+        this.element.classList.remove(FOOD_CLASS);
     }
 
     setFood() {
